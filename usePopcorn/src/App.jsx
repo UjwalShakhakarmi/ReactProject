@@ -9,42 +9,6 @@ const tempMovieData = [
       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
   },
   {
-    imdbID: "tt1375664",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt13756634",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt1375662334",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt137526634",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt13756699",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-
-  {
     imdbID: "tt0133093",
     Title: "The Matrix",
     Year: "1999",
@@ -86,13 +50,11 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-function NavBar() {
-  const [query, setQuery] = useState("");
+function NavBar({ children }) {
   return (
     <nav className="nav-bar">
       <Logo />
-      <Search query={query} />
-      <NumResults />
+      {children}
     </nav>
   );
 }
@@ -111,7 +73,9 @@ function NumResults() {
     </p>
   );
 }
-function Search({ query }) {
+function Search() {
+  const [query, setQuery] = useState("");
+
   return (
     <input
       className="search"
@@ -122,39 +86,22 @@ function Search({ query }) {
     />
   );
 }
-function Main() {
-  return (
-    <main className="main">
-      <ListBox />
-      <WatchedBox />
-    </main>
-  );
+function Main({ children }) {
+  return <main className="main">{children}</main>;
 }
-function ListBox() {
-  const [isOpen1, setIsOpen1] = useState(true);
+function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
     <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen1((open) => !open)}
-      >
-        {isOpen1 ? "–" : "+"}
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "-" : "+"}
       </button>
-      {isOpen1 && <MovieList />}
+      {isOpen && children}
     </div>
   );
 }
-function MovieList() {
-  const [movies, setMovies] = useState(tempMovieData);
 
-  return (
-    <ul className="list">
-      {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imbID} />
-      ))}
-    </ul>
-  );
-}
 function Movie({ movie }) {
   return (
     <li key={movie.imdbID}>
@@ -169,27 +116,17 @@ function Movie({ movie }) {
     </li>
   );
 }
-function WatchedBox() {
-  const [isOpen2, setIsOpen2] = useState(true);
-  const [watched, setWatched] = useState(tempWatchedData);
 
+function MovieList({ movies }) {
   return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedList watched={watched} />
-        </>
-      )}
-    </div>
+    <ul className="list">
+      {movies?.map((movie) => (
+        <Movie movie={movie} key={movie.imbID} />
+      ))}
+    </ul>
   );
 }
+
 function WatchedSummary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
@@ -250,10 +187,26 @@ function WatchedMovie({ movie }) {
   );
 }
 export default function App() {
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
+
   return (
     <>
-      <NavBar />
-      <Main />
+      <NavBar>
+        <Search />
+        <NumResults movies={movies} />
+      </NavBar>
+      <Main>
+        {/* it is an alternative of an children  */}
+        {/* <Box element={<MovieList movies={movies} />}/> */}
+        <Box>
+          <MovieList movies={movies} />
+        </Box>
+        <Box>
+          <WatchedSummary watched={watched} />
+          <WatchedList watched={watched} />
+        </Box>
+      </Main>
     </>
   );
 }
