@@ -68,3 +68,42 @@ export default function App() {
     </div>
   );
 }
+import countryToCurrency from "country-to-currency";
+import React from 'react'
+import  { useState, useEffect } from 'react';
+import axios from 'axios';
+import countryToCurrency from "country-to-currency";
+
+
+export default function CountryTest() {
+    const [usdAmount, setUsdAmount] = useState(1);
+  const [cnyAmount, setCnyAmount] = useState(null);
+  const [exchangeRate, setExchangeRate] = useState(null);
+
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const country = 'CN'; // Set the desired country code
+        const response = await axios.get(
+          'https://open.er-api.com/v6/latest/USD'
+        );
+        const currencyCode = countryToCurrency[country];
+
+        const rate = response.data.rates[currencyCode];
+        setExchangeRate(rate);
+      } catch (error) {
+        console.error('Error fetching exchange rate:', error);
+      }
+    };
+
+    fetchExchangeRate();
+  }, []);
+
+  useEffect(() => {
+    if (exchangeRate !== null) {
+      const convertedAmount = usdAmount * exchangeRate;
+      setCnyAmount(convertedAmount);
+    }
+  }, [usdAmount, exchangeRate]);
+
+
