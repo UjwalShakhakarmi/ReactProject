@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import styles from "./PageNav.module.css";
 import Logo from "./Logo";
+import { Button } from "./Button";
 export const PageNav = () => {
   return (
     <nav className={styles.nav}>
@@ -17,7 +18,9 @@ export const PageNav = () => {
           <NavLink to="/product">Product</NavLink>
         </li>
         <li>
-          <NavLink to="/login">Login</NavLink>
+          <NavLink to="/login">
+            <Button type="primary">Login</Button>
+          </NavLink>
         </li>
       </ul>
     </nav>
